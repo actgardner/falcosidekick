@@ -25,6 +25,11 @@ func TestNewSlackPayload(t *testing.T) {
 						Short: true,
 					},
 					slackAttachmentField{
+						Title: "proc.tty",
+						Value: "1234",
+						Short: true,
+					},
+					slackAttachmentField{
 						Title: "rule",
 						Value: "Test rule",
 						Short: true,

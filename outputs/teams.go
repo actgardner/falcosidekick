@@ -45,16 +45,11 @@ func newTeamsPayload(falcopayload types.FalcoPayload, config *types.Configuratio
 	}
 
 	if config.Teams.OutputFormat == "all" || config.Teams.OutputFormat == "facts" || config.Teams.OutputFormat == "" {
-		for i, j := range falcopayload.OutputFields {
-			switch j.(type) {
-			case string:
-				fact.Name = i
-				fact.Value = j.(string)
-			default:
-				continue
-			}
+		falcopayload.OutputFieldStrings(func(k, v string) {
+			fact.Name = k
+			fact.Value = v
 			facts = append(facts, fact)
-		}
+		})
 
 		fact.Name = "rule"
 		fact.Value = falcopayload.Rule

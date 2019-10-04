@@ -25,6 +25,10 @@ func TestNewTeamsPayload(t *testing.T) {
 						Value: "falcosidekick",
 					},
 					teamsFact{
+						Name:  "proc.tty",
+						Value: "1234",
+					},
+					teamsFact{
 						Name:  "rule",
 						Value: "Test rule",
 					},

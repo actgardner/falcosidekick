@@ -26,14 +26,9 @@ func newLokiPayload(falcopayload types.FalcoPayload, config *types.Configuration
 	ls := lokiStream{Entries: []lokiEntry{le}}
 
 	var s string
-	for i, j := range falcopayload.OutputFields {
-		switch j.(type) {
-		case string:
-			s += strings.Replace(strings.Replace(strings.Replace(i, ".", "", -1), "]", "", -1), "[", "", -1) + "=\"" + j.(string) + "\","
-		default:
-			continue
-		}
-	}
+	falcopayload.OutputFieldStrings(func(k, v string) {
+		s += strings.Replace(strings.Replace(strings.Replace(k, ".", "", -1), "]", "", -1), "[", "", -1) + "=\"" + v + "\","
+	})
 	s += "rule=\"" + falcopayload.Rule + "\","
 	s += "priority=\"" + falcopayload.Priority + "\","
 

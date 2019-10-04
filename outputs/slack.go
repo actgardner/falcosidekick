@@ -37,21 +37,16 @@ func newSlackPayload(falcopayload types.FalcoPayload, config *types.Configuratio
 	var field slackAttachmentField
 
 	if config.Slack.OutputFormat == "all" || config.Slack.OutputFormat == "fields" || config.Slack.OutputFormat == "" {
-		for i, j := range falcopayload.OutputFields {
-			switch j.(type) {
-			case string:
-				field.Title = i
-				field.Value = j.(string)
-				if len([]rune(j.(string))) < 36 {
-					field.Short = true
-				} else {
-					field.Short = false
-				}
-			default:
-				continue
+		falcopayload.OutputFieldStrings(func(k, v string) {
+			field.Title = k
+			field.Value = v
+			if len([]rune(v)) < 36 {
+				field.Short = true
+			} else {
+				field.Short = false
 			}
 			fields = append(fields, field)
-		}
+		})
 
 		field.Title = "rule"
 		field.Value = falcopayload.Rule

@@ -2,6 +2,8 @@ package types
 
 import (
 	"expvar"
+	"fmt"
+	"strconv"
 	"time"
 )
 
@@ -12,6 +14,22 @@ type FalcoPayload struct {
 	Rule         string                 `json:"rule"`
 	Time         time.Time              `json:"time"`
 	OutputFields map[string]interface{} `json:"output_fields"`
+}
+
+// OutputFieldStrings iterates over the OutputFields and calls it with the string representation of each key and value
+func (f *FalcoPayload) OutputFieldStrings(it func(key, value string)) {
+	for key, value := range f.OutputFields {
+		switch v := value.(type) {
+		case string:
+			it(key, v)
+		case float64:
+			it(key, strconv.FormatFloat(v, 'f', -1, 64))
+		case bool:
+			it(key, strconv.FormatBool(v))
+		default:
+			it(key, fmt.Sprintf("%v", v))
+		}
+	}
 }
 
 // Configuration is a struct to store configuration

@@ -15,6 +15,7 @@ func TestNewOpsgeniePayload(t *testing.T) {
 		Description: "Test rule",
 		Details: map[string]string{
 			"proc.name": "falcosidekick",
+			"proc.tty":  "1234",
 		},
 		Priority: "P5",
 	}

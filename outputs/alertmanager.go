@@ -21,15 +21,10 @@ func newAlertmanagerPayload(falcopayload types.FalcoPayload) []alertmanagerPaylo
 	amPayload.Labels = make(map[string]string)
 	amPayload.Annotations = make(map[string]string)
 
-	for i, j := range falcopayload.OutputFields {
-		switch j.(type) {
-		case string:
-			//AlertManger doesn't support dots in a label name
-			amPayload.Labels[strings.Replace(i, ".", "_", -1)] = j.(string)
-		default:
-			continue
-		}
-	}
+	falcopayload.OutputFieldStrings(func(k, v string) {
+		//AlertManger doesn't support dots in a label name
+		amPayload.Labels[strings.Replace(k, ".", "_", -1)] = v
+	})
 	amPayload.Labels["source"] = "falco"
 	amPayload.Labels["rule"] = falcopayload.Rule
 

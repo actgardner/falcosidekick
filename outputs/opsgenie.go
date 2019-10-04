@@ -15,14 +15,9 @@ type opsgeniePayload struct {
 
 func newOpsgeniePayload(falcopayload types.FalcoPayload, config *types.Configuration) opsgeniePayload {
 	details := make(map[string]string, len(falcopayload.OutputFields))
-	for i, j := range falcopayload.OutputFields {
-		switch j.(type) {
-		case string:
-			details[i] = j.(string)
-		default:
-			continue
-		}
-	}
+	falcopayload.OutputFieldStrings(func(k, v string) {
+		details[k] = v
+	})
 
 	var prio string
 	switch strings.ToLower(falcopayload.Priority) {
