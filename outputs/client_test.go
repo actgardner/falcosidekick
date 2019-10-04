@@ -63,3 +63,44 @@ func TestPost(t *testing.T) {
 		}
 	}
 }
+
+// Deep equality for two structs, ignoring the order of slice elements because iteration order of maps in Golang is randomized, so our output arrays can be in any order
+func DeepEqualsIgnoreSliceOrder(expected, actual interface{}) bool {
+	// If the expected and actual are exactly identical we're done
+	if reflect.DeepEqual(expected, actual) {
+		return true
+	}
+
+	// If either value isn't a slice, and they're not identical, they're not equal
+	if reflect.TypeOf(expected).Kind() != reflect.Slice ||
+		reflect.TypeOf(actual).Kind() != reflect.Slice {
+		return false
+	}
+
+	expectedValue := reflect.ValueOf(expected)
+	actualValue := reflect.ValueOf(actual)
+	if expectedValue.Len() != actualValue.Len() {
+		return false
+	}
+
+	// If both slices have the same number of occurences of each element using our definition of equality (ignoring slice order)
+	// and they have the same length, they have the same contents. We need to check the number of occurences and not just that an element
+	// exists to avoid a case like ["a", "b", "b" ] == ["a", "a", "b"].
+	// This could be more efficient if we memoized occurences for elements we've already seen, but the slices we're comparing are very small
+	for i := 0; i < expectedValue.Len(); i++ {
+		if occurencesOfElement(expectedValue.Index(i), expectedValue) != occurencesOfElement(actualValue.Index(i), actualValue) {
+			return false
+		}
+	}
+	return true
+}
+
+func occurencesOfElement(element, slice reflect.Value) int {
+	occurences := 0
+	for i := 0; i < slice.Len(); i++ {
+		if DeepEqualsIgnoreSliceOrder(element, slice.Index(i)) {
+			occurences += 1
+		}
+	}
+	return occurences
+}

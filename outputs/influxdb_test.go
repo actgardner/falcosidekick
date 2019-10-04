@@ -2,6 +2,7 @@ package outputs
 
 import (
 	"encoding/json"
+	"strings"
 	"testing"
 
 	"github.com/falcosecurity/falcosidekick/types"
@@ -14,8 +15,15 @@ func TestNewInfluxdbPayload(t *testing.T) {
 	json.Unmarshal([]byte(falcoTestInput), &f)
 	influxdbPayload, _ := json.Marshal(newInfluxdbPayload(f, &types.Configuration{}))
 
-	if string(influxdbPayload) != expectedOutput {
-		// t.Fatalf("\nexpected payload: \n%v\ngot: \n%v\n", o1, o2)
-		t.Fatalf("\nexpected payload: \n%v\ngot: \n%v\n", expectedOutput, string(influxdbPayload))
+	payloadTags := strings.Split(strings.Split(string(influxdbPayload), " ")[0], ",")
+	expectedTags := strings.Split(strings.Split(expectedOutput, " ")[0], ",")
+	if !DeepEqualsIgnoreSliceOrder(payloadTags, expectedTags) {
+		t.Fatalf("\nexpected tags: \n%v\ngot: \n%v\n", expectedTags, payloadTags)
+	}
+
+	payloadValue := strings.Split(string(influxdbPayload), " ")[1]
+	expectedValue := strings.Split(expectedOutput, " ")[1]
+	if payloadValue != expectedValue {
+		t.Fatalf("\nexpected value: \n%v\ngot: \n%v\n", expectedValue, payloadValue)
 	}
 }

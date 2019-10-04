@@ -2,7 +2,6 @@ package outputs
 
 import (
 	"encoding/json"
-	"reflect"
 	"testing"
 
 	"github.com/falcosecurity/falcosidekick/types"
@@ -44,7 +43,7 @@ func TestNewTeamsPayload(t *testing.T) {
 	var f types.FalcoPayload
 	json.Unmarshal([]byte(falcoTestInput), &f)
 	output := newTeamsPayload(f, &types.Configuration{})
-	if !reflect.DeepEqual(output, expectedOutput) {
+	if !DeepEqualsIgnoreSliceOrder(output, expectedOutput) {
 		t.Fatalf("\nexpected payload: \n%#v\ngot: \n%#v\n", expectedOutput, output)
 	}
 }
